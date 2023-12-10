@@ -1,0 +1,1 @@
+flake8 --config=./setup.cfg --ignore=WPS,DAR $1
