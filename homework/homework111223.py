@@ -25,7 +25,7 @@ logging.basicConfig(
 )
 
 # Text from teacher
-poem_text = """
+initial_poem_text = """
 I wandered lonely as a cloud
 That floats on high o'er vales and hills,
 When all at once I saw a crowd,
@@ -41,7 +41,7 @@ Ten thousand saw I at a glance,
 Tossing their heads in sprightly dance.
 """
 
-poem_text = poem_text.lower()
+poem_text = initial_poem_text.lower()
 vowels = ['a', 'e', 'i', 'o', 'u']  # list of vowels
 
 separator_number = 18
@@ -65,5 +65,5 @@ new_symbols_for_replacement = str.maketrans({
     'O': 'Ó', 'o': 'ó',
     'U': 'Ú', 'u': 'ú',
 })
-modified_poem_text = poem_text.translate(new_symbols_for_replacement)
+modified_poem_text = initial_poem_text.translate(new_symbols_for_replacement)
 logging.info(f'Modified text of the poem: {modified_poem_text}')
