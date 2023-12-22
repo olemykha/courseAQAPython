@@ -18,6 +18,7 @@ Task 3. Need to calculate total numbers of "female" and "male"
 """
 import logging
 from operator import itemgetter
+from pprint import pformat
 
 logging.basicConfig(
     level=logging.INFO,
@@ -71,18 +72,22 @@ init_people_list = [
 
 # Task 1. Sorting the list by age and sex fields.
 sorted_people_list = sorted(init_people_list, key=itemgetter(1, 4))
-logging.info('\n' + '\n'.join(map(str, sorted_people_list)))
+logging.info(f'\n{pformat(sorted_people_list)}')
 
 # Task 2. A new list without the first two elements and the last two elements
 people_list_cut = init_people_list[2:-2]
-logging.info('\n' + '\n'.join(map(str, people_list_cut)))
+logging.info(f'\n{pformat(people_list_cut)}')
 
 # Task 3. Calculating total numbers of "female" and "male".
-male_count = sum(1 for *_, gender in init_people_list if gender == 'male')
-female_count = sum(1 for *_, gender in init_people_list if gender == 'female')
+male_count = [
+    sum(1 for *_, gender in init_people_list if gender == 'male'),
+]
+female_count = [
+    sum(1 for *_, gender in init_people_list if gender == 'female'),
+]
 logging.info('-' * SEPARATOR_NUMBER)
 logging.info(f'| {"Sex":^6} | {"Count":^6} |')
 logging.info('-' * SEPARATOR_NUMBER)
-logging.info(f'| {"Male":^6} | {male_count:^6} |')
-logging.info(f'| {"Female":^5} | {female_count:^6} |')
+logging.info(f'| {"Male":^6} | {male_count[0]:^6} |')
+logging.info(f'| {"Female":^5} | {female_count[0]:^6} |')
 logging.info('-' * SEPARATOR_NUMBER)
