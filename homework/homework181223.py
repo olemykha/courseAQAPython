@@ -80,10 +80,10 @@ logging.info(f'\n{pformat(people_list_cut)}')
 
 # Task 3. Calculating total numbers of "female" and "male".
 male_count = [
-    sum(1 for *_, gender in init_people_list if gender == 'male'),
+    sum(1 for *_, gender in people_list_cut if gender == 'male'),
 ]
 female_count = [
-    sum(1 for *_, gender in init_people_list if gender == 'female'),
+    sum(1 for *_, gender in people_list_cut if gender == 'female'),
 ]
 logging.info('-' * SEPARATOR_NUMBER)
 logging.info(f'| {"Sex":^6} | {"Count":^6} |')
