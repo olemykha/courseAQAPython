@@ -23,23 +23,23 @@ w, x, y, z = 100, 200, 40, 300
 
 logging.info('Solving the task using the standard if-elif-else method:')
 if w <= x and w <= y and w <= z:
-    logging.info(f'Variable "w" has the minimum value.')
+    logging.info('Variable "w" has the minimum value.')
 elif x <= y and x <= z and x <= w:
-    logging.info(f'Variable "x" has the minimum value.')
+    logging.info('Variable "x" has the minimum value.')
 elif y <= z and y <= w and y <= x:
-    logging.info(f'Variable "y" has the minimum value.')
+    logging.info('Variable "y" has the minimum value.')
 else:
-    logging.info(f'Variable "z" has the minimum value.')
+    logging.info('Variable "z" has the minimum value.')
 
-logging.info(f'-' * SEPARATOR_NUMBER)
+logging.info('-' * SEPARATOR_NUMBER)
 
 logging.info('Solving the task using the min function:')
 min_value = min(w, x, y, z)
 if w == min_value:
-    logging.info(f'Variable "w" has the minimum value.')
+    logging.info('Variable "w" has the minimum value.')
 elif x == min_value:
-    logging.info(f'Variable "x" has the minimum value.')
+    logging.info('Variable "x" has the minimum value.')
 elif y == min_value:
-    logging.info(f'Variable "y" has the minimum value.')
+    logging.info('Variable "y" has the minimum value.')
 else:
-    logging.info(f'Variable "z" has the minimum value.')
+    logging.info('Variable "z" has the minimum value.')
