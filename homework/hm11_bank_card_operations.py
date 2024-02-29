@@ -155,42 +155,46 @@ if __name__ == '__main__':
     card3 = (BankCard
              ("Iryna", "Mykha"))
 
-print(BankCard.get_bank_info())
-print(TERMINAL_SEPARATOR)  # Just for readability in the terminal.
+    print(BankCard.get_bank_info())
+    print(TERMINAL_SEPARATOR)  # Just for readability in the terminal.
 
-check_balance = card1.check_balance()
-print(f'Current balance: {card1.check_balance()} ' + BankCard.get_currency())
-print(TERMINAL_SEPARATOR)
+    check_balance = card1.check_balance()
+    print(f'Current balance: '
+          f'{card1.check_balance()} ' + BankCard.get_currency())
+    print(TERMINAL_SEPARATOR)
 
-top_up_balance = card1.top_up_balance(1000)  # Refill bank account
-print(f'Top-up successful. Added: {top_up_balance} ' + BankCard.get_currency())
-print(f'Current balance: {card1.check_balance()} ' + BankCard.get_currency())
-print(TERMINAL_SEPARATOR)
+    top_up_balance = card1.top_up_balance(1000)  # Refill bank acc
+    print(f'Top-up successful. '
+          f'Added: {top_up_balance} ' + BankCard.get_currency())
+    print(f'Current balance: '
+          f'{card1.check_balance()} ' + BankCard.get_currency())
+    print(TERMINAL_SEPARATOR)
 
-top_down_balance = card1.top_down_balance(500)  # Withdrawing funds
-print(f'Withdrawal successful. '
-      f'Withdrawn: {top_down_balance} ' + BankCard.get_currency())
-print(f'Current balance: {card1.check_balance()} ' + BankCard.get_currency())
-print(TERMINAL_SEPARATOR)
+    top_down_balance = card1.top_down_balance(500)  # Withdrawing funds
+    print(f'Withdrawal successful. '
+          f'Withdrawn: {top_down_balance} ' + BankCard.get_currency())
+    print(f'Current balance: '
+          f'{card1.check_balance()} ' + BankCard.get_currency())
+    print(TERMINAL_SEPARATOR)
 
-card1.block_card()  # Card blocking
-print('Card has been blocked successfully.')
-print(card1)
-print(TERMINAL_SEPARATOR)
+    card1.block_card()  # Card blocking
+    print('Card has been blocked successfully.')
+    print(card1)
+    print(TERMINAL_SEPARATOR)
 
-card1.unblock_card()  # Card unblocking
-print('Card has been unblocked successfully.')
-print(card1)
-print(TERMINAL_SEPARATOR)
+    card1.unblock_card()  # Card unblocking
+    print('Card has been unblocked successfully.')
+    print(card1)
+    print(TERMINAL_SEPARATOR)
 
-transfer_money = card1.transfer_money(card2, 200)  # Money transferring
-print(f'Money has been transferred successfully. '
-      f'Transferred: {transfer_money} ' + BankCard.get_currency())
-print(card1)
-print("Transferred to: ")
-print(card2)
-print(TERMINAL_SEPARATOR)
+    transfer_money = card1.transfer_money(card2, 200)  # Money transferring
+    print(f'Money has been transferred successfully. '
+          f'Transferred: {transfer_money} ' + BankCard.get_currency())
+    print(card1)
+    print("Transferred to: ")
+    print(card2)
+    print(TERMINAL_SEPARATOR)
 
-print(card1.close_account())  # Attempt to close card with positive balance
-print(TERMINAL_SEPARATOR)
-print(card1.close_account(card3))  # Attempt to close card with remaining bal
+    print(card1.close_account())  # Attempt to close card with positive balance
+    print(TERMINAL_SEPARATOR)
+    print(card1.close_account(card3))  # Attempt to close acc \w remaining bal
