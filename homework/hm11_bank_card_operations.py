@@ -13,6 +13,8 @@ two or more getters/setters, __str_ magic method.
 -Do not forget about block ""if __name__ == '__main__':""
 and code there to check your class written logic.
 """
+from datetime import datetime
+import random
 
 TERMINAL_SEPARATOR = '-' * 42
 
@@ -21,15 +23,34 @@ class BankCard:
     bank_name = "StereoBank"
     currency = "USD"
 
-    def __init__(self, name, surname, card_number, pin, cvv, end_date):
-        self.__card_statement = 0.00
-        self.__is_blocked = False
-        self.__name = name
-        self.__surname = surname
-        self.__card_number = card_number
-        self.__pin = pin
-        self.__cvv = cvv
-        self.__end_date = end_date
+    def __init__(self, name, surname):
+        self.__balance = 0.00
+        self._is_blocked = False
+        self.name = name
+        self.surname = surname
+        self._card_number = self.generate_card_number()
+        self.__pin = self.generate_pin()
+        self.__cvv = self.generate_cvv()
+        self.__expiration_date = self.calculate_end_date()
+
+    @classmethod
+    def generate_card_number(cls):
+        return random.randint(1000000000000001, 9999999999999999)
+
+    @classmethod
+    def generate_pin(cls):
+        return random.randint(0000, 9999)
+
+    @classmethod
+    def generate_cvv(cls):
+        return random.randint(000, 999)
+
+    @classmethod
+    def calculate_end_date(cls):
+        current_date = datetime.now()
+        end_year = current_date.year + 5
+        end_month = current_date.month
+        return f'{end_month:02d}/{end_year}'
 
     @classmethod
     def get_bank_info(cls):
@@ -39,111 +60,100 @@ class BankCard:
     def get_currency(cls):
         return cls.currency
 
+    @classmethod
+    def _check_operation_allowed(cls, balance, amount):
+        if balance - amount < 0:
+            raise (ValueError
+                   ('There are not enough funds to perform this operation.'))
+
     def open_account(self):
-        self.__card_statement = 0.00
+        self.__balance = 0.00
 
     def check_balance(self):
-        return self.__card_statement
-
-    @staticmethod
-    def validate_card_number(card_number):
-        if len(str(card_number)) != 16:
-            return False
-        return True
+        return self.__balance
 
     def top_up_balance(self, amount):
-        self.__card_statement = self.__card_statement + amount
+        self.__balance = self.__balance + amount
         return amount
 
     def top_down_balance(self, amount):
-        if self.__card_statement - amount < 0:
-            raise (ValueError
-                   ('There are not enough funds to perform this operation.'))
-        self.__card_statement = self.__card_statement - amount
+        self._check_operation_allowed(self.__balance, amount)
+        self.__balance -= amount
         return amount
 
     def transfer_money(self, to_card, amount):
-        if self.__card_statement - amount < 0:
-            raise (ValueError
-                   ('There are not enough funds to perform this operation.'))
-        self.__card_statement -= amount
+        self._check_operation_allowed(self.__balance, amount)
+        self.__balance -= amount
         to_card.top_up_balance(amount)
         return amount
 
     def block_card(self):
-        self.__is_blocked = True
+        self._is_blocked = True
 
     def unblock_card(self):
-        self.__is_blocked = False
+        self._is_blocked = False
 
     def is_blocked(self):
-        return self.__is_blocked
+        return self._is_blocked
 
     def close_account(self, to_card=None):
-        if self.__card_statement != 0:
+        if self.__balance != 0:
             if to_card:
-                to_card.top_up_balance(self.__card_statement)
-                self.__card_statement = 0.00
+                to_card.top_up_balance(self.__balance)
+                self.__balance = 0.00
                 return (f'The account closed successfully. '
                         f'Remaining balance transferred to '
-                        f'{to_card.__name} {to_card.__surname}.')
+                        f'{to_card.name} {to_card.surname}.')
             else:
                 return ("The account cannot be closed "
                         "as it has a positive balance. "
                         "Please provide account to transfer funds.")
         else:
-            self.__card_statement = 0.00
+            self.__balance = 0.00
             return "The account closed successfully."
 
     def get_name(self):
-        return self.__name
+        return self.name
 
     def set_name(self, name):
-        self.__name = name
+        self.name = name
 
     def get_surname(self):
-        return self.__surname
+        return self.surname
 
     def set_surname(self, surname):
-        self.__surname = surname
-
-    def get_card_statement(self):
-        return self.__card_statement
+        self.surname = surname
 
     def get_card_number(self):
-        return self.__card_number
+        return self._card_number
 
     def get_pin(self):
         return self.__pin
-
-    def set_pin(self, pin):
-        self.__pin = pin
 
     def get_cvv(self):
         return self.__cvv
 
     def get_end_date(self):
-        return self.__end_date
+        return self.__expiration_date
 
     def __str__(self):
-        return f"Cardholder: {self.__name} {self.__surname}\n" \
-               f"Card Number: {'*' * 12}{self.__card_number[-4:]}\n" \
+        card_number_str = str(self._card_number)
+        return f"Cardholder: {self.name} {self.surname}\n" \
+               f"Card Number: {'*' * 12}{card_number_str[-4:]}\n" \
                f"CVV: ***\n" \
-               f"Expired date: {self.__end_date}\n" \
-               f"Balance: {self.__card_statement} {self.currency}\n" \
-               f"Card state: {'Blocked' if self.__is_blocked else 'Active'}"
+               f"Expired date: {self.__expiration_date}\n" \
+               f"Balance: {self.__balance} {self.currency}\n" \
+               f"Card state: {'Blocked' if self._is_blocked else 'Active'}"
 
 
 if __name__ == '__main__':
+
     card1 = (BankCard
-             ("Oleksandr", "Mykha",
-              "1234567890123456", "1234", "123", "12/24"))
+             ("Oleksandr", "Mykha"))
     card2 = (BankCard
-             ("Evgen", "Sivach",
-              "9876543210987654", "5678", "456", "12/25"))
+             ("Evgen", "Sivach"))
     card3 = (BankCard
-             ("Iryna", "Mykha",
-              "9876543210987654", "5678", "456", "12/25"))
+             ("Iryna", "Mykha"))
 
 print(BankCard.get_bank_info())
 print(TERMINAL_SEPARATOR)  # Just for readability in the terminal.
