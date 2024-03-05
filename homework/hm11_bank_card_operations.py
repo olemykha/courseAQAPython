@@ -15,8 +15,10 @@ and code there to check your class written logic.
 """
 from datetime import datetime
 import random
+import logging
 
 TERMINAL_SEPARATOR = '-' * 42
+_log = logging.getLogger('Logging')
 
 
 class BankCard:
@@ -33,20 +35,20 @@ class BankCard:
         self.__cvv = self.generate_cvv()
         self.__expiration_date = self.calculate_end_date()
 
-    @classmethod
-    def generate_card_number(cls):
+    @staticmethod
+    def generate_card_number():
         return random.randint(1000000000000001, 9999999999999999)
 
-    @classmethod
-    def generate_pin(cls):
+    @staticmethod
+    def generate_pin():
         return random.randint(0000, 9999)
 
-    @classmethod
-    def generate_cvv(cls):
+    @staticmethod
+    def generate_cvv():
         return random.randint(000, 999)
 
-    @classmethod
-    def calculate_end_date(cls):
+    @staticmethod
+    def calculate_end_date():
         current_date = datetime.now()
         end_year = current_date.year + 5
         end_month = current_date.month
@@ -65,9 +67,6 @@ class BankCard:
         if balance - amount < 0:
             raise (ValueError
                    ('There are not enough funds to perform this operation.'))
-
-    def open_account(self):
-        self.__balance = 0.00
 
     def check_balance(self):
         return self.__balance
@@ -97,56 +96,70 @@ class BankCard:
         return self._is_blocked
 
     def close_account(self, to_card=None):
+        _log.info('Closing account.')
         if self.__balance != 0:
             if to_card:
                 to_card.top_up_balance(self.__balance)
+                transferred_amount = self.__balance
                 self.__balance = 0.00
-                return (f'The account closed successfully. '
-                        f'Remaining balance transferred to '
-                        f'{to_card.name} {to_card.surname}.')
+                _log.info(f'The account closed successfully. '
+                          f'Remaining balance transferred to '
+                          f'{to_card.name} {to_card.surname}. '
+                          f'Transferred amount: '
+                          f'{transferred_amount} {self.currency}')
+                return True
             else:
-                return ("The account cannot be closed "
-                        "as it has a positive balance. "
-                        "Please provide account to transfer funds.")
+                _log.info("The account cannot be closed "
+                          "as it has a positive balance. "
+                          "Please provide an account to transfer funds.")
+                return False
         else:
             self.__balance = 0.00
-            return "The account closed successfully."
+            _log.info("The account closed successfully")
+            return True
 
-    def get_name(self):
-        return self.name
-
-    def set_name(self, name):
-        self.name = name
-
-    def get_surname(self):
-        return self.surname
-
-    def set_surname(self, surname):
-        self.surname = surname
-
-    def get_card_number(self):
-        return self._card_number
-
-    def get_pin(self):
+    @property
+    def pin(self):
         return self.__pin
 
-    def get_cvv(self):
+    @pin.setter
+    def pin(self, value):
+        self.__pin = value
+
+    @property
+    def cvv(self):
         return self.__cvv
 
-    def get_end_date(self):
+    @cvv.setter
+    def cvv(self, value):
+        self.__cvv = value
+
+    @property
+    def end_date(self):
         return self.__expiration_date
+
+    @end_date.setter
+    def end_date(self, value):
+        self.__expiration_date = value
 
     def __str__(self):
         card_number_str = str(self._card_number)
-        return f"Cardholder: {self.name} {self.surname}\n" \
-               f"Card Number: {'*' * 12}{card_number_str[-4:]}\n" \
-               f"CVV: ***\n" \
-               f"Expired date: {self.__expiration_date}\n" \
-               f"Balance: {self.__balance} {self.currency}\n" \
-               f"Card state: {'Blocked' if self._is_blocked else 'Active'}"
+        return f"Card details: \n"\
+               f"{' ' * 31}Cardholder - {self.name} {self.surname}\n" \
+               f"{' ' * 31}Card Number - {'*' * 12}{card_number_str[-4:]}\n" \
+               f"{' ' * 31}CVV - ***\n" \
+               f"{' ' * 31}Expired date - {self.__expiration_date}\n" \
+               f"{' ' * 31}Balance - {self.__balance} {self.currency}\n" \
+               f"{' ' * 31}Card state - {'Blocked' if self._is_blocked else 'Active'}"
 
 
 if __name__ == '__main__':
+    log_formatter = (logging.Formatter
+                     ('%(asctime)s [%(levelname)s] %(message)s'))
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_formatter)
+    _log.addHandler(console_handler)
+    _log.setLevel(logging.INFO)
 
     card1 = (BankCard
              ("Oleksandr", "Mykha"))
@@ -155,46 +168,49 @@ if __name__ == '__main__':
     card3 = (BankCard
              ("Iryna", "Mykha"))
 
-    print(BankCard.get_bank_info())
-    print(TERMINAL_SEPARATOR)  # Just for readability in the terminal.
+    _log.info(BankCard.get_bank_info())
+    _log.info(TERMINAL_SEPARATOR)  # Just for readability in the terminal.
 
     check_balance = card1.check_balance()
-    print(f'Current balance: '
-          f'{card1.check_balance()} ' + BankCard.get_currency())
-    print(TERMINAL_SEPARATOR)
+    _log.info(f'Current balance: '
+              f'{card1.check_balance()} ' + BankCard.get_currency())
+    _log.info(card1)
+    _log.info(TERMINAL_SEPARATOR)
 
     top_up_balance = card1.top_up_balance(1000)  # Refill bank acc
-    print(f'Top-up successful. '
-          f'Added: {top_up_balance} ' + BankCard.get_currency())
-    print(f'Current balance: '
-          f'{card1.check_balance()} ' + BankCard.get_currency())
-    print(TERMINAL_SEPARATOR)
+    _log.info(f'Top-up successful. '
+              f'Added: {top_up_balance} ' + BankCard.get_currency())
+    _log.info(f'Current balance: '
+              f'{card1.check_balance()} ' + BankCard.get_currency())
+    _log.info(card1)
+    _log.info(TERMINAL_SEPARATOR)
 
     top_down_balance = card1.top_down_balance(500)  # Withdrawing funds
-    print(f'Withdrawal successful. '
-          f'Withdrawn: {top_down_balance} ' + BankCard.get_currency())
-    print(f'Current balance: '
-          f'{card1.check_balance()} ' + BankCard.get_currency())
-    print(TERMINAL_SEPARATOR)
+    _log.info(f'Withdrawal successful. '
+              f'Withdrawn: {top_down_balance} ' + BankCard.get_currency())
+    _log.info(f'Current balance: '
+              f'{card1.check_balance()} ' + BankCard.get_currency())
+    _log.info(card1)
+    _log.info(TERMINAL_SEPARATOR)
 
     card1.block_card()  # Card blocking
-    print('Card has been blocked successfully.')
-    print(card1)
-    print(TERMINAL_SEPARATOR)
+    _log.info('Card has been blocked successfully.')
+    _log.info(card1)
+    _log.info(TERMINAL_SEPARATOR)
 
     card1.unblock_card()  # Card unblocking
-    print('Card has been unblocked successfully.')
-    print(card1)
-    print(TERMINAL_SEPARATOR)
+    _log.info('Card has been unblocked successfully.')
+    _log.info(card1)
+    _log.info(TERMINAL_SEPARATOR)
 
     transfer_money = card1.transfer_money(card2, 200)  # Money transferring
-    print(f'Money has been transferred successfully. '
-          f'Transferred: {transfer_money} ' + BankCard.get_currency())
-    print(card1)
-    print("Transferred to: ")
-    print(card2)
-    print(TERMINAL_SEPARATOR)
+    _log.info(f'Money has been transferred successfully. '
+              f'Transferred: {transfer_money} ' + BankCard.get_currency())
+    _log.info(card1)
+    _log.info("Transferred to ↓")
+    _log.info(card2)
+    _log.info(TERMINAL_SEPARATOR)
 
-    print(card1.close_account())  # Attempt to close card with positive balance
-    print(TERMINAL_SEPARATOR)
-    print(card1.close_account(card3))  # Attempt to close acc \w remaining bal
+    _log.info(card1.close_account())  # Closing acc with positive balance
+    _log.info(TERMINAL_SEPARATOR)
+    _log.info(card1.close_account(card3))  # Closing acc provision another acc
